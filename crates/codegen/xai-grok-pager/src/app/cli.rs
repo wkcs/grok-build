@@ -394,9 +394,9 @@ pub struct LeaderArgs {
 }
 #[derive(Debug, Clone, Parser)]
 #[command(
-    name = "grok",
+    name = "zerocode",
     version = xai_grok_version::full_version(),
-    about = "Grok Build TUI",
+    about = "ZeroCode agent harness",
     disable_version_flag = true,
     next_display_order = None,
     help_template = "\

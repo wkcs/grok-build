@@ -4,17 +4,16 @@
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://media.x.ai/v1/website/spacexai-symbol-white-transparent-0c31957f.png">
     <source media="(prefers-color-scheme: light)" srcset="https://media.x.ai/v1/website/spacexai-symbol-black-transparent-6435cf42.png">
-    <img alt="SpaceXAI logo" src="https://media.x.ai/v1/website/spacexai-symbol-black-transparent-6435cf42.png" width="96">
+    <img alt="ZeroCode (temporary upstream logo pending dragon asset)" src="https://media.x.ai/v1/website/spacexai-symbol-black-transparent-6435cf42.png" width="96">
   </picture>
   <br>
-  Grok Build (<code>grok</code>)
+  ZeroCode (<code>zerocode</code>)
 </h1>
 
-**Grok Build** is SpaceXAI's terminal-based AI coding agent. It runs as a
-full-screen TUI that understands your codebase, edits files, executes shell
-commands, searches the web, and manages long-running tasks — interactively,
-headlessly for scripting/CI, or embedded in editors via the Agent Client
-Protocol (ACP).
+**ZeroCode** is an AI coding agent harness (forked from Grok Build / grok-build).
+It provides an agent runtime for embedding in editors and desktop hosts via the
+Agent Client Protocol (ACP), plus an optional full-screen TUI. The product path
+for ZeroWork Desktop is **ACP stdio only** — do not embed the TUI.
 
 [Installing the released binary](#installing-the-released-binary) ·
 [Building from source](#building-from-source) ·
@@ -26,10 +25,10 @@ Protocol (ACP).
 
 ![Grok Build TUI](https://media.x.ai/v1/website/universe-tui-screenshot-6f7a0837.png)
 
-**Learn more about Grok Build at [x.ai/cli](https://x.ai/cli)**
+**Upstream reference:** [xai-org/grok-build](https://github.com/xai-org/grok-build) (Apache-2.0). This fork brands as **ZeroCode**.
 
-This repository contains the Rust source for the `grok` CLI/TUI and its agent
-runtime. It is synced periodically from the SpaceXAI monorepo.
+This repository contains the Rust source for the `zerocode` CLI and its agent
+runtime. It is synced from upstream `xai-org/grok-build` (originally SpaceXAI monorepo exports).
 
 A small `SOURCE_REV` file at the root records the full monorepo commit SHA
 for the version of the code present in this tree.
@@ -74,13 +73,14 @@ Requirements:
 
 ```sh
 cargo run -p xai-grok-pager-bin              # build + launch the TUI
-cargo build -p xai-grok-pager-bin --release  # release binary: target/release/xai-grok-pager
+cargo build -p xai-grok-pager-bin --release  # release binary: target/release/zerocode
 cargo check -p xai-grok-pager-bin            # fast validation
 ```
 
-The binary artifact is named `xai-grok-pager`; official installs ship it as
-`grok`. On first launch it opens your browser to authenticate — see the
-[authentication guide](crates/codegen/xai-grok-pager/docs/user-guide/02-authentication.md).
+The binary artifact is named **`zerocode`** (crate package remains `xai-grok-pager-bin` for now).
+Data directory default: **`~/.zerowork`** (override with `$GROK_HOME`).
+Host spawn: `zerocode agent … stdio`. Env for desktop Host: **`ZEROCODE_BIN`**.
+Upstream auth-on-first-launch may still exist in code; ZeroWork Host should use BYOK / local config and must not drive xAI browser login.
 
 ## Documentation
 
@@ -96,7 +96,7 @@ MCP servers, skills, plugins, hooks, headless mode, sandboxing, and more.
 
 | Path | Contents |
 |------|----------|
-| `crates/codegen/xai-grok-pager-bin` | Composition-root package; builds the `xai-grok-pager` binary |
+| `crates/codegen/xai-grok-pager-bin` | Composition-root package; builds the `zerocode` binary |
 | `crates/codegen/xai-grok-pager` | The TUI: scrollback, prompt, modals, rendering |
 | `crates/codegen/xai-grok-shell` | Agent runtime + leader/stdio/headless entry points |
 | `crates/codegen/xai-grok-tools` | Tool implementations (terminal, file edit, search, ...) |
