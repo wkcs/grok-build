@@ -154,15 +154,27 @@ fn has_usable_token_covers_memory_and_disk() {
     );
 }
 #[test]
-fn auth_scope_uses_oauth2_when_present() {
+fn auth_scope_default_is_byok_without_oauth_env() {
     let cfg = GrokComConfig::default();
+    assert_eq!(cfg.auth_scope(), crate::config::BYOK_AUTH_SCOPE);
+}
+#[test]
+fn auth_scope_uses_oauth2_when_present() {
+    let cfg = GrokComConfig {
+        oauth2: Some(crate::config::OAuth2ProviderConfig {
+            issuer: crate::config::XAI_OAUTH2_ISSUER.to_owned(),
+            client_id: "client-123".to_owned(),
+            scopes: vec![],
+            principal_type: None,
+            principal_id: None,
+            referrer: None,
+        }),
+        oidc: None,
+        ..GrokComConfig::default()
+    };
     assert_eq!(
         cfg.auth_scope(),
-        format!(
-            "{}::{}",
-            crate::config::XAI_OAUTH2_ISSUER,
-            obfstr::obfstr!("b1a00492-073a-47ea-816f-4c329264a828"),
-        )
+        format!("{}::client-123", crate::config::XAI_OAUTH2_ISSUER),
     );
 }
 #[test]

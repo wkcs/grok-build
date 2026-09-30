@@ -2,15 +2,15 @@
 
 <h1>
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://media.x.ai/v1/website/spacexai-symbol-white-transparent-0c31957f.png">
-    <source media="(prefers-color-scheme: light)" srcset="https://media.x.ai/v1/website/spacexai-symbol-black-transparent-6435cf42.png">
-    <img alt="ZeroCode (temporary upstream logo pending dragon asset)" src="https://media.x.ai/v1/website/spacexai-symbol-black-transparent-6435cf42.png" width="96">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dragon-ouroboros-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="docs/assets/dragon-ouroboros.svg">
+    <img alt="ZeroCode" src="docs/assets/dragon-ouroboros.svg" width="96">
   </picture>
   <br>
   ZeroCode (<code>zerocode</code>)
 </h1>
 
-**ZeroCode** is an AI coding agent harness (forked from Grok Build / grok-build).
+**ZeroCode** is an AI coding agent harness (forked from upstream grok-build; Apache-2.0).
 It provides an agent runtime for embedding in editors and desktop hosts via the
 Agent Client Protocol (ACP), plus an optional full-screen TUI. The product path
 for ZeroWork Desktop is **ACP stdio only** — do not embed the TUI.
@@ -22,8 +22,6 @@ for ZeroWork Desktop is **ACP stdio only** — do not embed the TUI.
 [Development](#development) ·
 [Contributing](#contributing) ·
 [License](#license)
-
-![Grok Build TUI](https://media.x.ai/v1/website/universe-tui-screenshot-6f7a0837.png)
 
 **Upstream reference:** [xai-org/grok-build](https://github.com/xai-org/grok-build) (Apache-2.0). This fork brands as **ZeroCode**.
 
@@ -37,18 +35,19 @@ for the version of the code present in this tree.
 
 ---
 
-## Installing the released binary
+## Installing / running
 
-Prebuilt binaries are published for macOS, Linux, and Windows:
+ZeroCode ships the **`zerocode`** binary from this fork (build from source below).
+Do **not** use the upstream `x.ai/cli` installer for ZeroWork Desktop Host wiring.
 
 ```sh
-curl -fsSL https://x.ai/cli/install.sh | bash   # macOS / Linux / Git Bash
-irm https://x.ai/cli/install.ps1 | iex          # Windows PowerShell
-grok --version
+cargo build -p xai-grok-pager-bin --release
+./target/release/zerocode --version
+# Host ACP path:
+#   zerocode agent … stdio
 ```
 
-See the [changelog](https://x.ai/build/changelog) for the latest fixes,
-features, and improvements in each release.
+Upstream reference changelog (historical): https://x.ai/build/changelog
 
 ## Building from source
 
@@ -80,11 +79,11 @@ cargo check -p xai-grok-pager-bin            # fast validation
 The binary artifact is named **`zerocode`** (crate package remains `xai-grok-pager-bin` for now).
 Data directory default: **`~/.zerowork`** (override with `$GROK_HOME`).
 Host spawn: `zerocode agent … stdio`. Env for desktop Host: **`ZEROCODE_BIN`**.
-Upstream auth-on-first-launch may still exist in code; ZeroWork Host should use BYOK / local config and must not drive xAI browser login.
+Default outbound auth/telemetry URLs are emptied in this fork. ZeroWork Host must use **BYOK** / local config (API key + `GROK_XAI_API_BASE_URL` / `[endpoints]`) and **must not** drive xAI browser login. OAuth to `auth.x.ai` is off unless `GROK_OAUTH2_*` is explicitly set.
 
 ## Documentation
 
-Full online documentation is available at
+Upstream online docs (historical reference):
 [docs.x.ai/build/overview](https://docs.x.ai/build/overview).
 
 The user guide ships with the pager crate:
