@@ -4556,8 +4556,8 @@ pub(crate) async fn build_local_workspace(
             workspace_home.display()
         ))
     })?;
-    let api_base_url = std::env::var("GROK_CLI_CHAT_PROXY_BASE_URL")
-        .unwrap_or_else(|_| "https://cli-chat-proxy.grok.com/v1".to_string());
+    // ZeroCode: no baked-in grok.com proxy; require env or fall back to empty (caller fails closed).
+    let api_base_url = std::env::var("GROK_CLI_CHAT_PROXY_BASE_URL").unwrap_or_default();
     let data_collection_disabled =
         std::env::var("GROK_WORKSPACE_DATA_COLLECTION_DISABLED").as_deref() != Ok("false");
     let mut factory = host_kind.session_context_factory(auth.clone(), api_base_url.clone());

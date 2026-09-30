@@ -30,7 +30,8 @@ pub struct VoiceConfig {
 impl Default for VoiceConfig {
     fn default() -> Self {
         Self {
-            api_base: "https://api.x.ai".into(),
+            // ZeroCode: empty until Host/BYOK sets api_base / GROK_XAI_API_BASE_URL
+            api_base: String::new(),
             stt_ws_path: "/v1/stt".into(),
             language: "en".into(),
             sample_rate: DEFAULT_SAMPLE_RATE,

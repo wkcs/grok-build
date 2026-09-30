@@ -121,6 +121,7 @@ pub struct OAuth2ProviderConfig {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub referrer: Option<String>,
 }
+/// Recognized upstream issuer (allowlist / tests). Not used as ZeroCode default login target.
 pub const XAI_OAUTH2_ISSUER: &str = "https://auth.x.ai";
 /// A separate const so the frozen contract test pins the production allowlist even when the non-production feature adds staging and local origins.
 const PROD_ACCOUNTS_APP_ORIGINS: &[&str] = &["https://accounts.x.ai"];
@@ -371,19 +372,12 @@ impl OAuth2ProviderConfig {
 impl Default for GrokComConfig {
     fn default() -> Self {
         let oidc = OidcAuthConfig::from_env();
+        // ZeroCode: do not ship a baked-in auth.x.ai OAuth client. OAuth only when
+        // GROK_OAUTH2_* (or oidc) env is set. Host should use BYOK / API key.
         let oauth2 = if oidc.is_some() {
             None
         } else {
-            Some(
-                OAuth2ProviderConfig::from_env().unwrap_or_else(|| OAuth2ProviderConfig {
-                    issuer: xai_oauth2_issuer().to_owned(),
-                    client_id: obfstr::obfstr!("b1a00492-073a-47ea-816f-4c329264a828").to_owned(),
-                    scopes: default_oauth2_scopes(),
-                    principal_type: None,
-                    principal_id: None,
-                    referrer: Some(DEFAULT_OAUTH2_REFERRER.to_owned()),
-                }),
-            )
+            OAuth2ProviderConfig::from_env()
         };
         let mut config = Self {
             grok_ws_origin: std::env::var("GROK_WS_ORIGIN")

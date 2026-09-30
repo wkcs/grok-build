@@ -412,14 +412,14 @@ fn auto_respond_to_permissions(
 /// "Not signed in" error message, tailored to the session type.
 fn auth_required_message(interactive: bool) -> String {
     if interactive {
-        "Not signed in. Run `grok login` to authenticate \
-         (or `grok login --device-code` if no browser is available)."
+        "Not signed in. ZeroCode expects BYOK: set an API key / endpoint \
+         (e.g. XAI_API_KEY and GROK_XAI_API_BASE_URL), or run `zerocode login` \
+         only if you intentionally configured OAuth."
             .to_string()
     } else {
-        "Not signed in. To authenticate without a browser, run:\n  \
-         grok login --device-code\n\n\
-         Alternatively, set the XAI_API_KEY environment variable \
-         or run `grok login` on a machine with a browser."
+        "Not signed in. Configure BYOK credentials for ZeroCode:\n  \
+         set XAI_API_KEY (and GROK_XAI_API_BASE_URL if needed).\n\n\
+         Browser/xAI OAuth login is not the default path; Host should not drive it."
             .to_string()
     }
 }

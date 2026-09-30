@@ -4,6 +4,7 @@
 //! Only API-key inference uses `xai_api_base_url`.
 use serde::{Deserialize, Serialize};
 use xai_grok_env::{PROD_CLI_CHAT_PROXY_BASE_URL, env_bool, env_string};
+/// ZeroCode: equals emptied `PROD_CLI_CHAT_PROXY_BASE_URL` unless Host sets `GROK_CLI_CHAT_PROXY_BASE_URL`.
 pub const CLI_CHAT_PROXY_BASE_URL_DEFAULT: &str = PROD_CLI_CHAT_PROXY_BASE_URL;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]
@@ -267,7 +268,8 @@ fn parse_otlp_header_list(raw: &str) -> Vec<(String, String)> {
         })
         .collect()
 }
-const XAI_API_BASE_URL_DEFAULT: &str = "https://api.x.ai/v1";
+// ZeroCode: no hardcoded xAI API base; Host/BYOK supplies GROK_XAI_API_BASE_URL or [endpoints].
+const XAI_API_BASE_URL_DEFAULT: &str = "";
 impl Default for EndpointsConfig {
     fn default() -> Self {
         Self {
