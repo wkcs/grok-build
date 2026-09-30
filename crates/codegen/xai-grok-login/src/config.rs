@@ -123,6 +123,8 @@ pub struct OAuth2ProviderConfig {
 }
 /// Recognized upstream issuer (allowlist / tests). Not used as ZeroCode default login target.
 pub const XAI_OAUTH2_ISSUER: &str = "https://auth.x.ai";
+/// auth.json scope when neither OIDC nor OAuth2 is configured (ZeroCode BYOK).
+pub const BYOK_AUTH_SCOPE: &str = "zerocode::byok";
 /// A separate const so the frozen contract test pins the production allowlist even when the non-production feature adds staging and local origins.
 const PROD_ACCOUNTS_APP_ORIGINS: &[&str] = &["https://accounts.x.ai"];
 /// Production build: accepts only the production accounts app.
@@ -316,13 +318,17 @@ impl GrokComConfig {
         matches!(self.preferred_method, Some(PreferredAuthMethod::ApiKey))
     }
     /// The auth.json scope key for this config.
+    ///
+    /// When neither OIDC nor OAuth2 is configured (ZeroCode BYOK / no `GROK_OAUTH2_*`),
+    /// returns a stable placeholder so callers can key auth.json without aborting.
     pub fn auth_scope(&self) -> String {
         if let Some(ref oidc) = self.oidc {
             format!("{}::{}", oidc.issuer.trim_end_matches('/'), oidc.client_id)
         } else if let Some(ref oauth2) = self.oauth2 {
             oauth2.auth_scope()
         } else {
-            unreachable!("oauth2 config is always present (xAI default or env override)")
+            // ZeroCode: no baked-in OAuth client; BYOK / API-key hosts have no issuer.
+            BYOK_AUTH_SCOPE.to_owned()
         }
     }
 }
@@ -604,6 +610,16 @@ mod tests {
             referrer: Some("grok-build".into()),
         };
         assert_eq!(cfg.auth_scope(), "https://auth.x.ai::client-123");
+    }
+    #[test]
+    fn auth_scope_byok_placeholder_when_no_oauth() {
+        let cfg = GrokComConfig {
+            oidc: None,
+            oauth2: None,
+            ..GrokComConfig::default()
+        };
+        assert_eq!(cfg.auth_scope(), BYOK_AUTH_SCOPE);
+        assert_eq!(GrokComConfig::default().auth_scope(), BYOK_AUTH_SCOPE);
     }
     /// FROZEN loopback contract: the accounts-app origins the CLI's loopback callback server accepts cross-origin requests from. The consent page (served from accounts.x.ai) delivers the code via `fetch(..., cors)`.
     /// Removing an origin therefore breaks loopback delivery for already-installed CLIs. Keep in sync with the oauth2-provider / accounts-app deployments. Non-production / local-dev origins are opt-in only.

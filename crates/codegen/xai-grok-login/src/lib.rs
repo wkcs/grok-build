@@ -44,7 +44,7 @@ pub use auth_provider::{
 };
 #[cfg(any(test, feature = "test-support"))]
 pub use auth_provider::{test_backdate_provider_mint, test_counting_provider};
-pub use config::LEGACY_AUTH_SCOPE;
+pub use config::{BYOK_AUTH_SCOPE, LEGACY_AUTH_SCOPE};
 pub use config::{
     CLI_CHAT_PROXY_BASE_URL_DEFAULT, ForceLoginTeam, GrokComConfig, OAuth2ProviderConfig,
     OidcAuthConfig, PreferredAuthMethod, XAI_OAUTH2_ISSUER, expand_auth_alias,
