@@ -1,11 +1,11 @@
 //! Home-directory resolution generally: USERPROFILE-first `home_dir`, plus
-//! grok-home (`$GROK_HOME` or `<home>/.grok`). Shared by `xai-grok-config`
+//! grok-home (`$GROK_HOME` or `<home>/.zerowork`). Shared by `xai-grok-config`
 //! and `xai-fast-worktree`.
 //!
 //! Which function to call:
 //! - [`grok_home`]: the usual choice, a cached, created path to build on.
 //! - [`user_grok_home`]: `None` instead of a cwd fallback when no home resolves.
-//! - [`default_grok_home`]: the `<home>/.grok` default, ignoring `$GROK_HOME`, so callers can detect an override.
+//! - [`default_grok_home`]: the `<home>/.zerowork` default, ignoring `$GROK_HOME`, so callers can detect an override.
 //! - [`resolve_grok_home`]: a fresh, uncached resolve.
 //! - [`resolve_grok_home_with_source`]: [`resolve_grok_home`] plus where the path came from.
 //! - [`home_dir`]: the home directory itself, for sibling dot dirs (`~/.claude`, `~/.agents`, ...).
@@ -26,7 +26,7 @@ use std::sync::OnceLock;
 pub enum GrokHomeSource {
     /// A non-empty `$GROK_HOME` override.
     EnvOverride,
-    /// `<home>/.grok` derived from the home directory.
+    /// `<home>/.zerowork` derived from the home directory.
     HomeDefault,
 }
 
@@ -38,15 +38,15 @@ pub fn home_dir() -> Option<PathBuf> {
     std::env::home_dir()
 }
 
-/// `<home>/.grok`, canonicalized via `dunce` (not `std::fs::canonicalize`,
+/// `<home>/.zerowork`, canonicalized via `dunce` (not `std::fs::canonicalize`,
 /// which yields Windows `\\?\` verbatim paths).
 fn grok_home_in(home: &Path) -> PathBuf {
     dunce::canonicalize(home)
         .unwrap_or_else(|_| home.to_path_buf())
-        .join(".grok")
+        .join(".zerowork")
 }
 
-/// `$GROK_HOME` verbatim when non-empty, else `<home>/.grok`.
+/// `$GROK_HOME` verbatim when non-empty, else `<home>/.zerowork`.
 /// Used as-is (not canonicalized) so literal prefix checks and symlink guards still see original components.
 fn resolve_grok_home_from(
     grok_home_env: Option<&OsStr>,
@@ -71,7 +71,7 @@ pub fn resolve_grok_home_with_source() -> Option<(PathBuf, GrokHomeSource)> {
     )
 }
 
-/// The default `<home>/.grok`, used when `$GROK_HOME` is unset.
+/// The default `<home>/.zerowork`, used when `$GROK_HOME` is unset.
 pub fn default_grok_home() -> PathBuf {
     grok_home_in(&home_dir().unwrap_or_else(|| PathBuf::from(".")))
 }
@@ -131,7 +131,7 @@ mod tests {
         assert_eq!(
             resolved,
             Some((
-                dunce::canonicalize(tmp.path()).unwrap().join(".grok"),
+                dunce::canonicalize(tmp.path()).unwrap().join(".zerowork"),
                 GrokHomeSource::HomeDefault
             ))
         );
@@ -144,7 +144,7 @@ mod tests {
         // comparisons. No-op assertion on Unix.
         let home = default_grok_home();
         assert!(!home.to_string_lossy().starts_with(r"\\?\"));
-        assert!(home.ends_with(".grok"));
+        assert!(home.ends_with(".zerowork"));
     }
 
     #[test]
